@@ -7,9 +7,9 @@ Agent images for KubeRocketCI issue agents, run by [krci-agent-dispatcher](https
 
 ## Images
 
-| Image | Toolchain |
-|---|---|
-| [`krci-agent-go`](images/krci-agent-go/) | Go |
+| Image | Toolchain | Latest | Release notes |
+|---|---|---|---|
+| [`krci-agent-go`](images/krci-agent-go/) | Go | [![krci-agent-go](https://img.shields.io/docker/v/epamedp/krci-agent-go?sort=semver&label=epamedp%2Fkrci-agent-go)](https://hub.docker.com/r/epamedp/krci-agent-go/tags) | [krci-agent-go](https://github.com/KubeRocketCI/krci-agent-images/releases?q=krci-agent-go) |
 
 ## Build
 
@@ -25,7 +25,7 @@ make lint                                   # hadolint
 
 1. Change `images/<name>/`.
 2. Bump `images/<name>/VERSION`: MAJOR contract break, MINOR tool upgrade or new tool, PATCH fix. CI fails without a bump.
-3. Merge to `main`. CI publishes `epamedp/<name>:<VERSION>` for every image whose version is not published yet.
+3. Merge to `main`. CI publishes `epamedp/<name>:<VERSION>` for every image whose version is not published yet, and creates the GitHub release `<name>/v<VERSION>`: pull reference, digest, commits since the previous release.
 
 ## Add an image
 
@@ -38,7 +38,7 @@ make lint                                   # hadolint
    profile.yaml    # optional; copied to /etc/krci-agent/profile.yaml
    ```
 
-3. Add a row to [Images](#images).
+3. Add a row to [Images](#images): copy the `krci-agent-go` row, replace the name.
 
 Agent image contract ([details](https://github.com/KubeRocketCI/krci-agent-dispatcher/blob/main/docs/agent-harness.md#agent-image)):
 
