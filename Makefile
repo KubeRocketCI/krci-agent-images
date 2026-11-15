@@ -77,6 +77,10 @@ push-one: check-image
 	  echo "$(IMAGE_REF)@$$(docker buildx imagetools inspect --format '{{.Manifest.Digest}}' $(IMAGE_REF))"; \
 	fi
 
+.PHONY: release-notes
+release-notes: ## Create the missing GitHub releases <image>/v<VERSION> of published images; DRY_RUN=1 prints only
+	DRY_RUN=$(DRY_RUN) ./hack/release-notes.sh $(IMAGE_REGISTRY) $(IMAGES)
+
 .PHONY: lint
 lint: ## Run hadolint on every image Dockerfile; config .hadolint.yaml
 	docker run --rm -v "$(CURDIR):/src:ro" -w /src $(HADOLINT_IMAGE) hadolint $(addsuffix /Dockerfile,$(addprefix images/,$(IMAGES)))

@@ -18,6 +18,9 @@ jobs:
   push:
     name: Push new image versions
     runs-on: ubuntu-latest
+    permissions:
+      # Git tags and GitHub releases <image>/v<VERSION>.
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -44,3 +47,10 @@ jobs:
       # Pushes <registry>/<image>:<VERSION> for every image whose tag is not in the registry; skips the rest.
       - name: Push images
         run: make push ALL=1 RELEASE=1
+
+      # Runs after a failed push too: releases the images that are published.
+      - name: Create GitHub releases
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: make release-notes

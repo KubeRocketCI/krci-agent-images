@@ -15,6 +15,7 @@ make push  ALL=1 RELEASE=1                 # every image, tag <VERSION>; what re
 make lint                                  # hadolint, .hadolint.yaml
 make changed                               # images changed since BASE (default origin/main)
 make check-versions                        # a changed image must bump VERSION; BASE (default origin/main)
+make release-notes DRY_RUN=1               # GitHub releases <name>/v<VERSION> of published images; DRY_RUN=1 prints only
 ```
 
 - `IMAGE`: one name or a space-separated list; default `krci-agent-go`. `ALL=1`: every image under `images/`.
@@ -25,7 +26,7 @@ make check-versions                        # a changed image must bump VERSION; 
 ## CI
 
 - `pr.yml`, pull request: `check-versions`, `lint`, then `check-build` for the `make changed` images.
-- `release.yml`, merge to `main`: `make push ALL=1 RELEASE=1`; publishes every image whose `<VERSION>` is not in the registry. Secrets: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`.
+- `release.yml`, merge to `main`: `make push ALL=1 RELEASE=1`; publishes every image whose `<VERSION>` is not in the registry. Then `make release-notes`: creates the GitHub release and git tag `<name>/v<VERSION>` for every published image without one, on the last commit that changed `images/<name>/`. Secrets: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`; `GITHUB_TOKEN` with `contents: write`.
 - `pr-validation.yml`, pull request: commit titles.
 
 ## Layout
@@ -36,6 +37,7 @@ images/<name>/VERSION         image version, MAJOR.MINOR.PATCH
 images/<name>/profile.yaml    agent profile: setup, verify, prompt; copied to /etc/krci-agent/profile.yaml
 hack/check-versions.sh        make check-versions
 hack/changed-images.sh        make changed; a Makefile change: every image
+hack/release-notes.sh         make release-notes
 .hadolint.yaml                hadolint config
 .github/workflows/            pr.yml, release.yml, pr-validation.yml
 ```
