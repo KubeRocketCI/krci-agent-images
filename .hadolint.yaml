@@ -1,0 +1,4 @@
+failure-threshold: warning
+ignored:
+  # Pin apt package versions: the base image tag pins the Debian release.
+  - DL3008

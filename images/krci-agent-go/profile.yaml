@@ -1,0 +1,6 @@
+# Agent profile of krci-agent-go, read by krci-agent-harness at /etc/krci-agent/profile.yaml.
+# Fields: setup (once after clone), verify (before publish), prompt (added to the system prompt); sh -c in the checkout.
+setup: go mod download
+verify: make vet test
+prompt: |
+  The project is a Go module. Run `make vet test` before you commit; commit only when it passes.
