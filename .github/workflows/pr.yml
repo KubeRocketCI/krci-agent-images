@@ -52,14 +52,10 @@ jobs:
           images=$(make -s changed BASE=origin/${{ github.base_ref }})
           echo "images=$images" >> "$GITHUB_OUTPUT"
 
-      - name: Set up QEMU
-        if: steps.changed.outputs.images != ''
-        uses: docker/setup-qemu-action@v4
-
       - name: Set up Docker Buildx
         if: steps.changed.outputs.images != ''
         uses: docker/setup-buildx-action@v4
 
-      - name: Build and selftest images for all platforms
+      - name: Build and selftest images for linux/amd64
         if: steps.changed.outputs.images != ''
         run: make selftest IMAGE="${{ steps.changed.outputs.images }}"
