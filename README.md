@@ -9,6 +9,7 @@ Agent images for KubeRocketCI issue agents, run by [krci-agent-dispatcher](https
 
 | Image | Toolchain | Latest | Release notes |
 |---|---|---|---|
+| [`krci-agent-baseline`](images/krci-agent-baseline/) | none; base of the images below | [![krci-agent-baseline](https://img.shields.io/docker/v/epamedp/krci-agent-baseline?sort=semver&label=epamedp%2Fkrci-agent-baseline)](https://hub.docker.com/r/epamedp/krci-agent-baseline/tags) | [krci-agent-baseline](https://github.com/KubeRocketCI/krci-agent-images/releases?q=krci-agent-baseline) |
 | [`krci-agent-go`](images/krci-agent-go/) | Go | [![krci-agent-go](https://img.shields.io/docker/v/epamedp/krci-agent-go?sort=semver&label=epamedp%2Fkrci-agent-go)](https://hub.docker.com/r/epamedp/krci-agent-go/tags) | [krci-agent-go](https://github.com/KubeRocketCI/krci-agent-images/releases?q=krci-agent-go) |
 | [`krci-agent-node`](images/krci-agent-node/) | Node.js, npm | [![krci-agent-node](https://img.shields.io/docker/v/epamedp/krci-agent-node?sort=semver&label=epamedp%2Fkrci-agent-node)](https://hub.docker.com/r/epamedp/krci-agent-node/tags) | [krci-agent-node](https://github.com/KubeRocketCI/krci-agent-images/releases?q=krci-agent-node) |
 | [`krci-agent-python`](images/krci-agent-python/) | Python, uv | [![krci-agent-python](https://img.shields.io/docker/v/epamedp/krci-agent-python?sort=semver&label=epamedp%2Fkrci-agent-python)](https://hub.docker.com/r/epamedp/krci-agent-python/tags) | [krci-agent-python](https://github.com/KubeRocketCI/krci-agent-images/releases?q=krci-agent-python) |
