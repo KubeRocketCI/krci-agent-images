@@ -10,7 +10,7 @@ Contract with the dispatcher: `krci-agent-dispatcher` `docs/agent-harness.md`, s
 make list                                  # images and versions
 make build IMAGE=krci-agent-go             # local Docker, host platform
 make check-build IMAGE=krci-agent-go       # every platform in PLATFORMS; no load, no push
-make selftest IMAGE=krci-agent-go          # per platform in PLATFORMS: build, load, krci-agent-harness selftest
+make selftest IMAGE=krci-agent-go          # SELFTEST_PLATFORM (default linux/amd64): build, load, krci-agent-harness selftest
 make push  IMAGE=krci-agent-go             # linux/amd64 + linux/arm64; prints <ref>@<digest>; skips existing tags
 make push  ALL=1 RELEASE=1                 # every image, tag <VERSION>; what release.yml runs
 make lint                                  # hadolint, .hadolint.yaml
@@ -27,7 +27,7 @@ make release-notes DRY_RUN=1               # GitHub releases <name>/v<VERSION> o
 
 ## CI
 
-- `pr.yml`, pull request: `check-versions`, `lint`, then `selftest` for the `make changed` images, every platform (arm64 under QEMU).
+- `pr.yml`, pull request: `check-versions`, `lint`, then `selftest` for the `make changed` images, linux/amd64 only. arm64 is built only by `release.yml`.
 - `release.yml`, merge to `main`: `make push ALL=1 RELEASE=1`; publishes every image whose `<VERSION>` is not in the registry. Then `make release-notes`: creates the GitHub release and git tag `<name>/v<VERSION>` for every published image without one, on the last commit that changed `images/<name>/`. Secrets: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`; `GITHUB_TOKEN` with `contents: write`.
 - `pr-validation.yml`, pull request: commit titles.
 

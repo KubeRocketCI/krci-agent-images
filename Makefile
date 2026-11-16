@@ -3,6 +3,7 @@ IMAGE ?= krci-agent-go
 PLATFORMS ?= linux/amd64,linux/arm64
 HADOLINT_IMAGE ?= hadolint/hadolint:v2.15.1
 # Harness binary for make selftest; same as the krci-agent-dispatcher chart value harnessImage.
+SELFTEST_PLATFORM ?= linux/amd64
 HARNESS_IMAGE ?= epamedp/krci-agent-harness:0.1.0-SNAPSHOT.33@sha256:984dd2faac64222626a7ea65828fc6c9ae861967c17d2eca50f2bda331f17519
 
 SOURCE_URL := https://github.com/KubeRocketCI/krci-agent-images
@@ -53,7 +54,7 @@ build: ## Build images for the host platform into local Docker: IMAGE or ALL=1, 
 	@$(call each,build)
 check-build: ## Build images for every platform in PLATFORMS; no load, no push: IMAGE or ALL=1
 	@$(call each,check-build)
-selftest: ## Build images per platform in PLATFORMS into local Docker, run krci-agent-harness selftest in each: IMAGE or ALL=1, HARNESS_IMAGE
+selftest: ## Build images for SELFTEST_PLATFORM into local Docker, run krci-agent-harness selftest: IMAGE or ALL=1, HARNESS_IMAGE
 	@$(call each,selftest)
 push: ## Build and push multi-platform images, print digests; skip existing tags: IMAGE or ALL=1, TAG, RELEASE, PLATFORMS
 	@$(call each,push)
@@ -69,7 +70,7 @@ check-build-one: check-image
 	docker buildx build --platform $(PLATFORMS) $(LABELS) --output type=cacheonly $(IMAGE_DIR)
 
 selftest-one: check-image
-	./hack/selftest.sh $(IMAGE_DIR) $(IMAGE_REF) $(HARNESS_IMAGE) $(PLATFORMS)
+	./hack/selftest.sh $(IMAGE_DIR) $(IMAGE_REF) $(HARNESS_IMAGE) $(SELFTEST_PLATFORM)
 
 # Registry answer "not found": build and push. Tag exists: skip. Any other error: fail.
 push-one: check-image

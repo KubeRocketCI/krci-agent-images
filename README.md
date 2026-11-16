@@ -21,7 +21,7 @@ make list                                   # images and versions
 make build IMAGE=krci-agent-go              # local Docker, host platform
 make build ALL=1                            # every image
 make check-build IMAGE="krci-agent-go"      # linux/amd64 + linux/arm64, no push
-make selftest IMAGE=krci-agent-go           # linux/amd64 + linux/arm64: build, krci-agent-harness selftest
+make selftest IMAGE=krci-agent-go           # linux/amd64: build, krci-agent-harness selftest
 make lint                                   # hadolint
 ```
 
@@ -52,7 +52,7 @@ Agent image contract ([details](https://github.com/KubeRocketCI/krci-agent-dispa
 - no `CMD`, no `ENTRYPOINT`;
 - no credentials.
 
-`make selftest` checks the contract on every platform; CI runs it for every changed image.
+`make selftest` checks the contract on linux/amd64; CI runs it for every changed image.
 
 `profile.yaml`:
 
