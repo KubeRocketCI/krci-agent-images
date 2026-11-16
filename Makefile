@@ -4,7 +4,7 @@ PLATFORMS ?= linux/amd64,linux/arm64
 HADOLINT_IMAGE ?= hadolint/hadolint:v2.15.1
 # Harness binary for make selftest; same as the krci-agent-dispatcher chart value harnessImage.
 SELFTEST_PLATFORM ?= linux/amd64
-HARNESS_IMAGE ?= epamedp/krci-agent-harness:0.1.0-SNAPSHOT.33@sha256:984dd2faac64222626a7ea65828fc6c9ae861967c17d2eca50f2bda331f17519
+HARNESS_IMAGE ?= epamedp/krci-agent-harness:0.1.0-SNAPSHOT.37@sha256:42be0e0f7dd47cf60efceb5d847666dc2f388e58b968be65bd6006eb03c7cca8
 
 SOURCE_URL := https://github.com/KubeRocketCI/krci-agent-images
 IMAGES := $(patsubst images/%/Dockerfile,%,$(wildcard images/*/Dockerfile))
