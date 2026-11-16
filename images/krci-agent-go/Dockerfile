@@ -1,36 +1,32 @@
-FROM debian:bookworm-slim
+ARG BASELINE_IMAGE=epamedp/krci-agent-baseline:0.1.0@sha256:8ca970ac43d597973516577bd9e481b05e54ffe131ef234fb2e981c613e3f6e8
+
+FROM ${BASELINE_IMAGE}
 
 ARG TARGETARCH
-ARG GO_VERSION=1.27.0
-ARG CLAUDE_VERSION=2.1.325
+ARG GO_VERSION=1.27.4
+# SHA-256 of the Go release tarballs: https://go.dev/dl/?mode=json
+ARG GO_SHA256_AMD64=7226736c2339719cda28fbf3a54d71aa63bcefe376e98cef00034268dab24840
+ARG GO_SHA256_ARM64=3392582988a273a87ab5043ee1b2c9c17a2c3c00580bf9326c47a2e0aaaeac92
 
+USER 0:0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl git jq make \
- && rm -rf /var/lib/apt/lists/*
-
-RUN curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-${TARGETARCH}.tar.gz" | tar -C /usr/local -xz \
- && /usr/local/go/bin/go version
-
-# Native installer into a throwaway HOME; the binary is copied to /usr/local/bin.
-# /tmp is emptied and /root/.claude* removed after the version check.
-RUN HOME=/tmp/claude-install bash -o pipefail -c "curl -fsSL https://claude.ai/install.sh | bash -s ${CLAUDE_VERSION}" \
- && cp -L /tmp/claude-install/.local/bin/claude /usr/local/bin/claude \
- && claude --version | grep -F "${CLAUDE_VERSION}" \
- && find /tmp -mindepth 1 -delete \
- && rm -rf /root/.claude*
-
-RUN useradd -m -u 1000 -s /bin/bash agent \
- && install -d -o agent -g agent /work \
- && install -d -m 0755 -o root -g root /etc/krci-agent
+RUN case "${TARGETARCH}" in \
+      amd64) sum="${GO_SHA256_AMD64}" ;; \
+      arm64) sum="${GO_SHA256_ARM64}" ;; \
+      *) echo "unsupported TARGETARCH ${TARGETARCH}" >&2; exit 1 ;; \
+    esac \
+ && curl -fsSLo /tmp/go.tar.gz "https://go.dev/dl/go${GO_VERSION}.linux-${TARGETARCH}.tar.gz" \
+ && echo "${sum}  /tmp/go.tar.gz" | sha256sum -c - \
+ && tar -C /usr/local -xzf /tmp/go.tar.gz \
+ && rm /tmp/go.tar.gz \
+ && /usr/local/go/bin/go version | grep -F "go${GO_VERSION} "
 
 COPY --chmod=0644 profile.yaml /etc/krci-agent/profile.yaml
 
 ENV PATH=/usr/local/go/bin:/usr/local/bin:/usr/bin:/bin \
     GOTOOLCHAIN=local \
-    GOPATH=/home/agent/go \
-    DISABLE_AUTOUPDATER=1
+    GOPATH=/home/agent/go
 
 # Actor command: /opt/krci-agent/krci-agent-harness run, set by the dispatcher's actor template.
 USER 1000:1000
