@@ -1,0 +1,28 @@
+# Agent profile of krci-agent-python, read by krci-agent-harness at /etc/krci-agent/profile.yaml.
+# Fields: setup (once after clone), verify (before publish), prompt (added to the system prompt); sh -c in the checkout.
+# setup: a uv.lock that uv sync generates is listed in .git/info/exclude, never committed.
+setup: |
+  set -eu
+  if [ -f pyproject.toml ]; then
+    if [ -f uv.lock ]; then
+      uv sync --frozen --all-groups --all-extras
+    else
+      grep -qxF /uv.lock .git/info/exclude 2>/dev/null || echo /uv.lock >> .git/info/exclude
+      uv sync --all-groups --all-extras
+    fi
+  fi
+  if [ -f requirements.txt ]; then
+    uv venv --allow-existing
+    uv pip install -r requirements.txt
+  fi
+# verify: pytest from the project's environment; --locked when uv.lock is tracked. Exit 5 (no tests collected) fails.
+verify: |
+  set -eu
+  flags=
+  if git ls-files --error-unmatch uv.lock >/dev/null 2>&1; then flags=--locked; fi
+  exec uv run $flags pytest
+prompt: |
+  The project is a Python project; the tool is uv, Python is the one in the image, pip is not installed.
+  Add a dependency with `uv add <pkg>`, a test dependency with `uv add --dev <pkg>`; in a requirements.txt
+  project, add it to requirements.txt and run `uv pip install -r requirements.txt`.
+  Tests run with pytest. Run `uv run pytest` before you commit; commit only when it passes.

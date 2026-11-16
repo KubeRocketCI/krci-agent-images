@@ -10,6 +10,7 @@ Agent images for KubeRocketCI issue agents, run by [krci-agent-dispatcher](https
 | Image | Toolchain | Latest | Release notes |
 |---|---|---|---|
 | [`krci-agent-go`](images/krci-agent-go/) | Go | [![krci-agent-go](https://img.shields.io/docker/v/epamedp/krci-agent-go?sort=semver&label=epamedp%2Fkrci-agent-go)](https://hub.docker.com/r/epamedp/krci-agent-go/tags) | [krci-agent-go](https://github.com/KubeRocketCI/krci-agent-images/releases?q=krci-agent-go) |
+| [`krci-agent-python`](images/krci-agent-python/) | Python, uv | [![krci-agent-python](https://img.shields.io/docker/v/epamedp/krci-agent-python?sort=semver&label=epamedp%2Fkrci-agent-python)](https://hub.docker.com/r/epamedp/krci-agent-python/tags) | [krci-agent-python](https://github.com/KubeRocketCI/krci-agent-images/releases?q=krci-agent-python) |
 
 ## Build
 
