@@ -37,7 +37,7 @@ make lint                                   # hadolint
 2. Add `images/krci-agent-<toolchain>/`:
 
    ```
-   Dockerfile      # agent image contract below
+   Dockerfile      # FROM the pinned krci-agent-baseline; adds the toolchain only
    VERSION         # 0.1.0
    profile.yaml    # optional; copied to /etc/krci-agent/profile.yaml
    ```

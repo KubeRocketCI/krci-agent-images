@@ -50,6 +50,8 @@ hack/release-notes.sh         make release-notes
 - Commit titles: `EPMDEDP-<id>: <type>: <description>`, 10–85 characters (`.github/workflows/pr-validation.yml`). Sign off (`git commit -s`).
 - Image name: `krci-agent-<toolchain>`, published as `epamedp/<name>`.
 - `krci-agent-baseline`: base image, no toolchain, no profile. OS packages, Claude Code, the `agent` user, `/work`, `/etc/krci-agent`; passes `selftest` as is.
+- A toolchain image starts `ARG BASELINE_IMAGE=epamedp/krci-agent-baseline:<VERSION>@sha256:<digest>`, `FROM ${BASELINE_IMAGE}`, `USER 0:0`; adds only its toolchain and profile; ends `USER 1000:1000`, `WORKDIR /work`.
+- A baseline change: one pull request for the baseline; after its release, a second one repins `BASELINE_IMAGE` and bumps `VERSION` in every toolchain image.
 - Any change under `images/<name>/` bumps its `VERSION` in the same pull request: MAJOR for a contract break, MINOR for a tool upgrade or a new tool, PATCH for a fix.
 - Tool versions are `ARG`s in the Dockerfile with a pinned default.
 - `SHELL ["/bin/bash", "-o", "pipefail", "-c"]` before the first piped `RUN`; `make lint` must pass.
