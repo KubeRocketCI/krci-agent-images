@@ -1,0 +1,29 @@
+# Agent profile of krci-agent-node, read by krci-agent-harness at /etc/krci-agent/profile.yaml.
+# Fields: setup (once after clone), verify (before publish), prompt (added to the system prompt); sh -c in the checkout.
+# setup: /node_modules/ and a package-lock.json that npm install generates are listed in .git/info/exclude, never committed.
+setup: |
+  set -eu
+  exclude=$(git rev-parse --git-path info/exclude)
+  mkdir -p "$(dirname "$exclude")"
+  grep -qxF /node_modules/ "$exclude" 2>/dev/null || echo /node_modules/ >> "$exclude"
+  if [ -f package.json ]; then
+    if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+      npm ci
+    else
+      grep -qxF /package-lock.json "$exclude" 2>/dev/null || echo /package-lock.json >> "$exclude"
+      npm install
+    fi
+  fi
+# verify: npm ci first when a lockfile is tracked, as the CI pipeline installs; then the project's test script.
+# CI=true: test runners run once, no watch mode. No test script, or the npm init placeholder, fails.
+verify: |
+  set -eu
+  export CI=true
+  if [ -n "$(git ls-files package-lock.json npm-shrinkwrap.json)" ]; then npm ci; fi
+  exec npm test
+prompt: |
+  The project is a Node.js project; the tools are the Node.js and npm in the image. pnpm, yarn and corepack
+  are not installed, and there is no C/C++ compiler for native addons.
+  Add a dependency with `npm install <pkg>`, a dev dependency with `npm install --save-dev <pkg>`; when
+  package-lock.json is tracked, commit it with package.json.
+  Tests run with `npm test`. Run it before you commit; commit only when it passes.

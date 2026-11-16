@@ -2,6 +2,8 @@ IMAGE_REGISTRY ?= epamedp
 IMAGE ?= krci-agent-go
 PLATFORMS ?= linux/amd64,linux/arm64
 HADOLINT_IMAGE ?= hadolint/hadolint:v2.15.1
+# Harness binary for make selftest; same as the krci-agent-dispatcher chart value harnessImage.
+HARNESS_IMAGE ?= epamedp/krci-agent-harness:0.1.0-SNAPSHOT.33@sha256:984dd2faac64222626a7ea65828fc6c9ae861967c17d2eca50f2bda331f17519
 
 SOURCE_URL := https://github.com/KubeRocketCI/krci-agent-images
 IMAGES := $(patsubst images/%/Dockerfile,%,$(wildcard images/*/Dockerfile))
@@ -44,17 +46,19 @@ check-image:
 	@test -f $(IMAGE_DIR)/Dockerfile || { echo "unknown image $(IMAGE); see make list" >&2; exit 1; }
 	@echo '$(VERSION)' | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$$' || { echo "$(IMAGE_DIR)/VERSION: want MAJOR.MINOR.PATCH, got '$(VERSION)'" >&2; exit 1; }
 
-.PHONY: ref build check-build push
+.PHONY: ref build check-build selftest push
 ref: ## Print the image references: IMAGE or ALL=1, TAG, RELEASE
 	@$(call each,ref)
 build: ## Build images for the host platform into local Docker: IMAGE or ALL=1, TAG
 	@$(call each,build)
 check-build: ## Build images for every platform in PLATFORMS; no load, no push: IMAGE or ALL=1
 	@$(call each,check-build)
+selftest: ## Build images per platform in PLATFORMS into local Docker, run krci-agent-harness selftest in each: IMAGE or ALL=1, HARNESS_IMAGE
+	@$(call each,selftest)
 push: ## Build and push multi-platform images, print digests; skip existing tags: IMAGE or ALL=1, TAG, RELEASE, PLATFORMS
 	@$(call each,push)
 
-.PHONY: ref-one build-one check-build-one push-one
+.PHONY: ref-one build-one check-build-one selftest-one push-one
 ref-one: check-image
 	@echo $(IMAGE_REF)
 
@@ -63,6 +67,9 @@ build-one: check-image
 
 check-build-one: check-image
 	docker buildx build --platform $(PLATFORMS) $(LABELS) --output type=cacheonly $(IMAGE_DIR)
+
+selftest-one: check-image
+	./hack/selftest.sh $(IMAGE_DIR) $(IMAGE_REF) $(HARNESS_IMAGE) $(PLATFORMS)
 
 # Registry answer "not found": build and push. Tag exists: skip. Any other error: fail.
 push-one: check-image

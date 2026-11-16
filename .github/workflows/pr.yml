@@ -37,7 +37,7 @@ jobs:
         run: make lint
 
   build:
-    name: Build changed images
+    name: Build and selftest changed images
     needs: [check-versions, lint]
     runs-on: ubuntu-latest
     steps:
@@ -60,6 +60,6 @@ jobs:
         if: steps.changed.outputs.images != ''
         uses: docker/setup-buildx-action@v4
 
-      - name: Build images for all platforms
+      - name: Build and selftest images for all platforms
         if: steps.changed.outputs.images != ''
-        run: make check-build IMAGE="${{ steps.changed.outputs.images }}"
+        run: make selftest IMAGE="${{ steps.changed.outputs.images }}"

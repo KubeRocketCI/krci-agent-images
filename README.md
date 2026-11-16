@@ -10,6 +10,7 @@ Agent images for KubeRocketCI issue agents, run by [krci-agent-dispatcher](https
 | Image | Toolchain | Latest | Release notes |
 |---|---|---|---|
 | [`krci-agent-go`](images/krci-agent-go/) | Go | [![krci-agent-go](https://img.shields.io/docker/v/epamedp/krci-agent-go?sort=semver&label=epamedp%2Fkrci-agent-go)](https://hub.docker.com/r/epamedp/krci-agent-go/tags) | [krci-agent-go](https://github.com/KubeRocketCI/krci-agent-images/releases?q=krci-agent-go) |
+| [`krci-agent-node`](images/krci-agent-node/) | Node.js, npm | [![krci-agent-node](https://img.shields.io/docker/v/epamedp/krci-agent-node?sort=semver&label=epamedp%2Fkrci-agent-node)](https://hub.docker.com/r/epamedp/krci-agent-node/tags) | [krci-agent-node](https://github.com/KubeRocketCI/krci-agent-images/releases?q=krci-agent-node) |
 | [`krci-agent-python`](images/krci-agent-python/) | Python, uv | [![krci-agent-python](https://img.shields.io/docker/v/epamedp/krci-agent-python?sort=semver&label=epamedp%2Fkrci-agent-python)](https://hub.docker.com/r/epamedp/krci-agent-python/tags) | [krci-agent-python](https://github.com/KubeRocketCI/krci-agent-images/releases?q=krci-agent-python) |
 
 ## Build
@@ -19,6 +20,7 @@ make list                                   # images and versions
 make build IMAGE=krci-agent-go              # local Docker, host platform
 make build ALL=1                            # every image
 make check-build IMAGE="krci-agent-go"      # linux/amd64 + linux/arm64, no push
+make selftest IMAGE=krci-agent-go           # linux/amd64 + linux/arm64: build, krci-agent-harness selftest
 make lint                                   # hadolint
 ```
 
@@ -48,6 +50,8 @@ Agent image contract ([details](https://github.com/KubeRocketCI/krci-agent-dispa
 - `/opt/krci-agent` absent;
 - no `CMD`, no `ENTRYPOINT`;
 - no credentials.
+
+`make selftest` checks the contract on every platform; CI runs it for every changed image.
 
 `profile.yaml`:
 
